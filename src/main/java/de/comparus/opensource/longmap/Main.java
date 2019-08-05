@@ -15,7 +15,6 @@ public class Main {
 //System.out.println(d + " - d");
 //System.out.println(Integer.MAX_VALUE + " = MaxValue");
 //System.out.println(10<<8);
-		
 		LongMapImpl<String> map = new LongMapImpl<>(16,true);
 		HashSet<Long> set = new HashSet<>();
 		for(int i = 0; i < 250; i++) {
@@ -49,6 +48,7 @@ public class Main {
 		System.out.println("Keys: " + Arrays.toString(map.keys()));
 		System.out.println("Values: " + Arrays.toString(map.values()));
 		System.out.println("set size: " + set.size());
+		
 	}
 
 }
