@@ -91,6 +91,8 @@ public class LongMapImpl<V> implements LongMap<V> {
      * @param value value to be associated with the specified key
      * @return the previous value associated with <tt>key</tt>, or
      *         <tt>null</tt> if there was no mapping for <tt>key</tt>.
+     *         (A <tt>null</tt> return can also indicate that the map
+     *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
 	public V put(long key, V value) {
 		Entry<V> prevEntry = null;
@@ -282,7 +284,7 @@ public class LongMapImpl<V> implements LongMap<V> {
 	/**
 	 * Returns a number of entries contained in this map
 	 */
-	public long size() {
+	public int size() {
 		return _size;
 	}
 

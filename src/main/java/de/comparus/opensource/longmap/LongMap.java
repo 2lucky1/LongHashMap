@@ -12,6 +12,12 @@ public interface LongMap<V> {
     long[] keys();
     V[] values();
 
-    long size();
+  /**
+   * I have changed return type from long to int 
+   * because maximum size was accepted equals maximum size
+   * of HashMap = 1073741824 and int can contains this number
+   * 
+   */
+    int size(); 
     void clear();
 }

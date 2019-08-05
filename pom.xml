@@ -3,4 +3,15 @@
   <groupId>test</groupId>
   <artifactId>LongMap</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
+  <dependencies>
+  	<!-- https://mvnrepository.com/artifact/junit/junit -->
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	    <version>4.13-beta-3</version>
+	    <scope>test</scope>
+	</dependency>
+  </dependencies>
+
 </project>
