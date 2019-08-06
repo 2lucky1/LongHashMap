@@ -20,6 +20,9 @@ public class LongMapImpl<V> implements LongMap<V> {
 	 */
 	public static final int MIN_LENGTH_TO_DECREASING = 100;
 
+	/**
+	 * Maximum and minimum load thresholds for resizing
+	 */
 	private static final float MAX_LOAD_FACTOR = 0.75f;
 	private static final float MIN_LOAD_FACTOR = 0.35f;
 
@@ -66,7 +69,7 @@ public class LongMapImpl<V> implements LongMap<V> {
 	 * if the last one has loading less than MIN_LOAD_FACTOR (0.35).
 	 * 
 	 * @param initialCapacity the initial capacity.
-	 * @param doDecreasing bolean flag,if it is true - do decreasing if current loading of 
+	 * @param doDecreasing - boolean flag, if it is true - do decreasing, if current loading of 
 	 * LonMapImpl is less than MIN_LOAD_FACTOR, if false - no decreasing.  
 	 */
 	@SuppressWarnings("unchecked")
@@ -178,6 +181,7 @@ public class LongMapImpl<V> implements LongMap<V> {
 					_bucketsNumber--;
 					if (_doDecreasing && calcCurrentLoad() < MIN_LOAD_FACTOR && _entries.length > MIN_LENGTH_TO_DECREASING) {
 						decreaseCapacity(_capacity);
+						rehash(_capacity);
 					}
 				}
 				return currentEntry.getValue();
@@ -304,7 +308,7 @@ public class LongMapImpl<V> implements LongMap<V> {
 	// Auxiliary methods and classes:
 
 	/**
-	 * 
+	 * Checks intial capacity before create new object of this class
 	 * @param initialCapacity the initial capacity
 	 * @throws IllegalArgumentException
 	 *             if the initial capacity is negative or change it to MAX_CAPACITY
