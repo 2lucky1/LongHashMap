@@ -1,6 +1,8 @@
 package de.comparus.opensource.longmap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,9 +19,6 @@ public class LongMapImplTest {
 	String _existingValue;
 	String _nonexistingValue;
 
-//	List<Long> _keysList;
-//	List<String> _valuesList;
-
 	@Before
 	public void init() {
 		_map = new LongMapImpl<>();
@@ -29,22 +28,6 @@ public class LongMapImplTest {
 		_map.put(524L, "Bradbury");
 		_map.put(17L, "Lem");
 		_map.put(163L, "Verne");
-
-//		_keysList = new ArrayList<>();
-//
-//		_keysList.add(12L);
-//		_keysList.add(21L);
-//		_keysList.add(524L);
-//		_keysList.add(17L);
-//		_keysList.add(163L);
-
-//		_valuesList = new ArrayList<>();
-//
-//		_valuesList.add("Heinlein");
-//		_valuesList.add("Asimov");
-//		_valuesList.add("Bradbury");
-//		_valuesList.add("Lem");
-//		_valuesList.add("Verne");
 
 		_existingKey = 21;
 		_nonexistingKey = 10;
@@ -178,11 +161,11 @@ public class LongMapImplTest {
 
 	@Test
 	public void doesMapReturnCorrectArrayOfValuesTest() {
-		String[] expected = { "Heinlein", "Asimov", "Bradbury", "Lem", "Verne" };
-		System.out.println(_map.values().getClass());
-		Object[] actual = _map.values();
-		Arrays.sort(expected);
-		Arrays.sort(actual);
-		Assert.assertTrue(Arrays.equals(expected, actual));
+		String[] expectedArray = { "Heinlein", "Asimov", "Bradbury", "Lem", "Verne" };
+		List<String> expected = new ArrayList<>(Arrays.asList(expectedArray));
+		List<String> actual = _map.values();
+		actual.sort(null);
+		expected.sort(null);
+		Assert.assertTrue(expected.equals(actual));
 	}
 }

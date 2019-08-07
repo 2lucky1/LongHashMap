@@ -1,5 +1,8 @@
 package de.comparus.opensource.longmap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LongMapImpl<V> implements LongMap<V> {
 
 	// Constants:
@@ -13,10 +16,10 @@ public class LongMapImpl<V> implements LongMap<V> {
 	 * Maximum capacity which was chosen equal to HashMap capacity
 	 */
 	public static final int MAX_CAPACITY = 1 << 30;
-	
+
 	/**
-	 * Minimum length of entries array to decrease it if its loading
-	 * less than MIN_LOAD_FACTOR.
+	 * Minimum length of entries array to decrease it if its loading less than
+	 * MIN_LOAD_FACTOR.
 	 */
 	public static final int MIN_LENGTH_TO_DECREASING = 100;
 
@@ -61,16 +64,17 @@ public class LongMapImpl<V> implements LongMap<V> {
 		this._capacity = initialCapacity;
 		this._entries = new Entry[initialCapacity];
 	}
-	
+
 	/**
 	 * Constructs an empty <tt>LongMapImpl</tt> with the specified initial capacity
 	 * and default MAX_LOAD_FACTOR (0.75). Using doDecreasing parameter you can
-	 * setup property which is responsible for decreasing of an array of entries
-	 * if the last one has loading less than MIN_LOAD_FACTOR (0.35).
+	 * setup property which is responsible for decreasing of an array of entries if
+	 * the last one has loading less than MIN_LOAD_FACTOR (0.35).
 	 * 
 	 * @param initialCapacity the initial capacity.
-	 * @param doDecreasing - boolean flag, if it is true - do decreasing, if current loading of 
-	 * LonMapImpl is less than MIN_LOAD_FACTOR, if false - no decreasing.  
+	 * @param doDecreasing    - boolean flag, if it is true - do decreasing, if
+	 *                        current loading of LonMapImpl is less than
+	 *                        MIN_LOAD_FACTOR, if false - no decreasing.
 	 */
 	@SuppressWarnings("unchecked")
 	public LongMapImpl(int initialCapacity, boolean doDecreasing) {
@@ -84,42 +88,41 @@ public class LongMapImpl<V> implements LongMap<V> {
 	// Methods to implement:
 
 	/**
-     * Associates the specified value with the specified key in this map.
-     * If the map previously contained a mapping for the key, the old
-     * value is replaced.
-     * 
-     * 
-     *
-     * @param key key with which the specified value is to be associated
-     * @param value value to be associated with the specified key
-     * @return the previous value associated with <tt>key</tt>, or
-     *         <tt>null</tt> if there was no mapping for <tt>key</tt>.
-     *         (A <tt>null</tt> return can also indicate that the map
-     *         previously associated <tt>null</tt> with <tt>key</tt>.)
-     */
+	 * Associates the specified value with the specified key in this map. If the map
+	 * previously contained a mapping for the key, the old value is replaced.
+	 * 
+	 * 
+	 *
+	 * @param key   key with which the specified value is to be associated
+	 * @param value value to be associated with the specified key
+	 * @return the previous value associated with <tt>key</tt>, or <tt>null</tt> if
+	 *         there was no mapping for <tt>key</tt>. (A <tt>null</tt> return can
+	 *         also indicate that the map previously associated <tt>null</tt> with
+	 *         <tt>key</tt>.)
+	 */
 	public V put(long key, V value) {
 		Entry<V> prevEntry = null;
 		V oldValue = null;
-		
-		//Check loading of entries array
+
+		// Check loading of entries array
 		_currentLoad = calcCurrentLoad();
 		if (_currentLoad > MAX_LOAD_FACTOR) {
 			increaseCapacity(_capacity);
 			if (_doRehash) {
 				rehash(_capacity);
-			} 
+			}
 		}
-		
-		//Calculate an index based on the key's hash
-		int idx = (int) (getHash(key) % _capacity);
-		
+
+		// Calculate an index based on the key's hash
+		int idx = calcIdxBasedOnKeyHash(key);
+
 		if (_entries[idx] == null) {
-			//Create new Entry on this position
+			// Create new Entry on this position
 			_entries[idx] = new Entry<V>(key, value);
 			_size++;
 			_bucketsNumber++;
 		} else {
-			//Check if any entry in this linked list has key equals key from parameters
+			// Check if any entry in this linked list has key equals key from parameters
 			Entry<V> currentEntry = _entries[idx];
 			while (currentEntry != null && currentEntry.getKey() != key) {
 				prevEntry = currentEntry;
@@ -140,11 +143,11 @@ public class LongMapImpl<V> implements LongMap<V> {
 	}
 
 	/**
-	 * Returns the value to which the specified key is mapped,
-     * or {@code null} if this map contains no mapping for the key.
+	 * Returns the value to which the specified key is mapped, or {@code null} if
+	 * this map contains no mapping for the key.
 	 */
 	public V get(long key) {
-		int idx = (int) (getHash(key) % _capacity);
+		int idx = calcIdxBasedOnKeyHash(key);
 		Entry<V> currentEntry = _entries[idx];
 		if (currentEntry == null)
 			return null;
@@ -159,7 +162,6 @@ public class LongMapImpl<V> implements LongMap<V> {
 		}
 	}
 
-	
 	/**
 	 * Removes the mapping for the specified key from this map if present.
 	 */
@@ -167,9 +169,9 @@ public class LongMapImpl<V> implements LongMap<V> {
 		Entry<V> prevEntry = null;
 		Entry<V> nextEntry = null;
 		V value;
-		
-		int idx = (int) (getHash(key) % _capacity);
-		
+
+		int idx = calcIdxBasedOnKeyHash(key);
+
 		Entry<V> currentEntry = _entries[idx];
 		if (currentEntry == null) {
 			return null;
@@ -179,7 +181,8 @@ public class LongMapImpl<V> implements LongMap<V> {
 				_size--;
 				if (_entries[idx] == null) {
 					_bucketsNumber--;
-					if (_doDecreasing && calcCurrentLoad() < MIN_LOAD_FACTOR && _entries.length > MIN_LENGTH_TO_DECREASING) {
+					if (_doDecreasing && calcCurrentLoad() < MIN_LOAD_FACTOR
+							&& _entries.length > MIN_LENGTH_TO_DECREASING) {
 						decreaseCapacity(_capacity);
 						rehash(_capacity);
 					}
@@ -210,11 +213,10 @@ public class LongMapImpl<V> implements LongMap<V> {
 	}
 
 	/**
-	 * Returns <tt>true</tt> if this map contains a mapping for the
-     * specified key.
+	 * Returns <tt>true</tt> if this map contains a mapping for the specified key.
 	 */
 	public boolean containsKey(long key) {
-		int idx = (int) (getHash(key) % _capacity);
+		int idx = calcIdxBasedOnKeyHash(key);
 		Entry<V> currentEntry = _entries[idx];
 		if (currentEntry == null) {
 			return false;
@@ -230,8 +232,8 @@ public class LongMapImpl<V> implements LongMap<V> {
 	}
 
 	/**
-	 * Returns <tt>true</tt> if this map maps one or more keys to the
-     * specified value.
+	 * Returns <tt>true</tt> if this map maps one or more keys to the specified
+	 * value.
 	 */
 	public boolean containsValue(V value) {
 		for (Entry<V> entry : _entries) {
@@ -269,22 +271,20 @@ public class LongMapImpl<V> implements LongMap<V> {
 	/**
 	 * Returns array of values contained in this map
 	 */
-	public V[] values() {
-		int n = 0;
-		@SuppressWarnings("unchecked")
-		V[] values = (V[]) new Object[_size];
+	public List<V> values() {
+		List<V> values = new ArrayList<V>(_size);
 		for (Entry<V> entry : _entries) {
 			if (entry == null) {
 				continue;
 			}
 			while (entry != null) {
-				values[n++] = entry.getValue();
+				values.add(entry.getValue());
 				entry = entry.getNext();
 			}
 		}
 		return values;
 	}
-	
+
 	/**
 	 * Returns a number of entries contained in this map
 	 */
@@ -293,9 +293,8 @@ public class LongMapImpl<V> implements LongMap<V> {
 	}
 
 	/**
-	 * Removes all of the mappings from this map.
-     * The map will be empty after this call returns.
-     * Its capacity will be equals DEFAULT_CAPACITY
+	 * Removes all of the mappings from this map. The map will be empty after this
+	 * call returns. Its capacity will be equals DEFAULT_CAPACITY
 	 */
 	@SuppressWarnings("unchecked")
 	public void clear() {
@@ -309,10 +308,11 @@ public class LongMapImpl<V> implements LongMap<V> {
 
 	/**
 	 * Checks intial capacity before create new object of this class
+	 * 
 	 * @param initialCapacity the initial capacity
-	 * @throws IllegalArgumentException
-	 *             if the initial capacity is negative or change it to MAX_CAPACITY
-	 *             if it is more than the last one
+	 * @throws IllegalArgumentException if the initial capacity is negative or
+	 *                                  change it to MAX_CAPACITY if it is more than
+	 *                                  the last one
 	 */
 	private void checkInitCapcity(int initialCapacity) {
 		if (initialCapacity < 0) {
@@ -325,15 +325,15 @@ public class LongMapImpl<V> implements LongMap<V> {
 	}
 
 	/**
-	 * Computes hash code of a key using static method from class Long
+	 * Computes index of entry based on key hash
 	 * 
 	 * @param key the key for which a hash code is computed
 	 * @return hash code of the key
 	 */
-	private int getHash(long key) {
-		return Long.hashCode(key);
+	private int calcIdxBasedOnKeyHash(long key){
+		return (int) (Long.hashCode(key) % _capacity);
 	}
-
+	
 	/**
 	 * Entity which represent pare key-value and has mechanism to create linked list
 	 * if collisions happen
@@ -399,9 +399,8 @@ public class LongMapImpl<V> implements LongMap<V> {
 	}
 
 	/**
-	 * Increases a capacity in 2 times. If increasing impossible,
-	 * specify capacity equals MAX_CAPACITY and forbid next rehash
-	 * changing _doRehash to false.
+	 * Increases a capacity in 2 times. If increasing impossible, specify capacity
+	 * equals MAX_CAPACITY and forbid next rehash changing _doRehash to false.
 	 */
 	private void increaseCapacity(int currentCapacity) {
 		currentCapacity = currentCapacity * 2;
@@ -412,7 +411,7 @@ public class LongMapImpl<V> implements LongMap<V> {
 	}
 
 	/**
-	 * Decreases capacity in 2 times and makes _doRehash equals true 
+	 * Decreases capacity in 2 times and makes _doRehash equals true
 	 */
 	private void decreaseCapacity(int currentCapacity) {
 		_doRehash = true;

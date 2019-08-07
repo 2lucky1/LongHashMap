@@ -30,10 +30,10 @@ public class Main {
 		}
 		
 		
-		System.out.println(map.size());
-		System.out.println("Keys: " + Arrays.toString(map.keys()));
-		System.out.println("Values: " + Arrays.toString(map.values()));
-		System.out.println("set size: " + set.size());
+//		System.out.println(map.size());
+//		System.out.println("Keys: " + Arrays.toString(map.keys()));
+//		System.out.println("Values: " + Arrays.toString(map.values()));
+//		System.out.println("set size: " + set.size());
 		
 		set.clear();
 		for(int i = 0; i < 10; i++) {
@@ -46,7 +46,7 @@ public class Main {
 		
 		System.out.println(map.size());
 		System.out.println("Keys: " + Arrays.toString(map.keys()));
-		System.out.println("Values: " + Arrays.toString(map.values()));
+//		System.out.println("Values: " + Arrays.toString(map.values()));
 		System.out.println("set size: " + set.size());
 		
 	}
