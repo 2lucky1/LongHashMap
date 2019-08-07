@@ -166,6 +166,6 @@ public class LongMapImplTest {
 		List<String> actual = _map.values();
 		actual.sort(null);
 		expected.sort(null);
-		Assert.assertTrue(expected.equals(actual));
+		Assert.assertTrue("Map returned incorrect values list.", expected.equals(actual));
 	}
 }
