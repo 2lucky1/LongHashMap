@@ -105,12 +105,9 @@ public class LongMapImpl<V> implements LongMap<V> {
 		V oldValue = null;
 
 		// Check loading of entries array
-		_currentLoad = calcCurrentLoad();
-		if (_currentLoad > MAX_LOAD_FACTOR) {
-			increaseCapacity(_capacity);
-			if (_doRehash) {
+		if (_doRehash && calcCurrentLoad() > MAX_LOAD_FACTOR) {
+				increaseCapacity();
 				rehash(_capacity);
-			}
 		}
 
 		// Calculate an index based on the key's hash
@@ -183,7 +180,7 @@ public class LongMapImpl<V> implements LongMap<V> {
 					_bucketsNumber--;
 					if (_doDecreasing && calcCurrentLoad() < MIN_LOAD_FACTOR
 							&& _entries.length > MIN_LENGTH_TO_DECREASING) {
-						decreaseCapacity(_capacity);
+						decreaseCapacity();
 						rehash(_capacity);
 					}
 				}
@@ -376,7 +373,7 @@ public class LongMapImpl<V> implements LongMap<V> {
 	 * Computes current loading of this map
 	 */
 	private float calcCurrentLoad() {
-		return _bucketsNumber / _capacity;
+		return (float)_bucketsNumber / _capacity;
 	}
 
 	/**
@@ -384,6 +381,7 @@ public class LongMapImpl<V> implements LongMap<V> {
 	 */
 	@SuppressWarnings("unchecked")
 	private void rehash(int newCapacity) {
+		_doRehash = false;
 		_size = 0;
 		_bucketsNumber = 0;
 		Entry<V>[] oldEntries = _entries;
@@ -396,25 +394,26 @@ public class LongMapImpl<V> implements LongMap<V> {
 				}
 			}
 		}
+		_doRehash = true;
 	}
 
 	/**
 	 * Increases a capacity in 2 times. If increasing impossible, specify capacity
 	 * equals MAX_CAPACITY and forbid next rehash changing _doRehash to false.
 	 */
-	private void increaseCapacity(int currentCapacity) {
-		currentCapacity = currentCapacity * 2;
-		if (currentCapacity > MAX_CAPACITY) {
+	private void increaseCapacity() {
+		_capacity = _capacity * 2;
+		if (_capacity > MAX_CAPACITY) {
 			_doRehash = false;
-			currentCapacity = MAX_CAPACITY;
+			_capacity = MAX_CAPACITY;
 		}
 	}
 
 	/**
 	 * Decreases capacity in 2 times and makes _doRehash equals true
 	 */
-	private void decreaseCapacity(int currentCapacity) {
+	private void decreaseCapacity() {
 		_doRehash = true;
-		currentCapacity = currentCapacity / 2;
+		_capacity = _capacity / 2;
 	}
 }
