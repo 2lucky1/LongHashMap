@@ -32,7 +32,6 @@ public class LongMapImpl<V> implements LongMap<V> {
 	// Variables:
 	private int _capacity;
 	private int _size = 0;
-	private float _currentLoad;
 	private Entry<V>[] _entries;
 	private int _bucketsNumber = 0;
 	private boolean _doRehash = true;
